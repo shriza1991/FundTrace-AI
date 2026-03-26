@@ -1,8 +1,9 @@
-from,to,amount,timestamp
-A,B,5000,2026-01-01
-B,C,4800,2026-01-01
-C,D,4700,2026-01-01
-D,A,4600,2026-01-01
-A,E,1000,2026-01-02
-A,F,1200,2026-01-02
-A,G,1100,2026-01-02
+transaction_id,from,to,amount,timestamp,channel,location,account_type
+T1,A,B,5000,2026-01-01,UPI,Mumbai,savings
+T2,B,C,4800,2026-01-01,NEFT,Delhi,current
+T3,C,D,4700,2026-01-01,IMPS,Pune,savings
+T4,D,A,4600,2026-01-01,UPI,Mumbai,savings
+T5,A,E,1000,2026-01-02,UPI,Mumbai,savings
+T6,A,F,1200,2026-01-02,UPI,Mumbai,savings
+T7,A,G,1100,2026-01-02,UPI,Mumbai,savings
+T8,H,A,9000,2026-01-10,NEFT,Unknown,savings

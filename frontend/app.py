@@ -1,10 +1,10 @@
 import streamlit as st
 import requests
 import pandas as pd
-import networkx as nx
-import matplotlib.pyplot as plt
 
-st.title("💸 FundTrace AI – Fraud Dashboard")
+st.set_page_config(layout="wide")
+
+st.title("🏦 FundTrace AI – Banking Fraud Dashboard")
 
 uploaded_file = st.file_uploader("Upload Transactions CSV", type=["csv"])
 
@@ -14,16 +14,23 @@ if uploaded_file:
 
     data = response.json()
 
-    st.subheader("🚨 Fraud Alerts")
-    st.write(data["alerts"])
+    st.subheader("🚨 High Risk Accounts")
 
-    df = pd.read_csv(uploaded_file)
+    for alert in data["alerts"]:
+        if alert["severity"] == "HIGH":
+            st.error(f"{alert['account']} | Score: {alert['risk_score']} | {alert['reasons']}")
 
-    G = nx.DiGraph()
-    for _, row in df.iterrows():
-        G.add_edge(row['from'], row['to'])
+    st.subheader("⚠️ Medium Risk Accounts")
 
-    st.subheader("🌐 Transaction Graph")
-    fig, ax = plt.subplots()
-    nx.draw(G, with_labels=True, ax=ax)
-    st.pyplot(fig)
+    for alert in data["alerts"]:
+        if alert["severity"] == "MEDIUM":
+            st.warning(f"{alert['account']} | Score: {alert['risk_score']}")
+
+    st.subheader("ℹ️ Low Risk Accounts")
+
+    for alert in data["alerts"]:
+        if alert["severity"] == "LOW":
+            st.info(f"{alert['account']} | Score: {alert['risk_score']}")
+
+    st.subheader("🧠 Detection Signals")
+    st.write(data["signals"])
