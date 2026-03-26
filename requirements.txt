@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+pandas
+networkx
+streamlit
+matplotlib
+scikit-learn
+python-multipart
