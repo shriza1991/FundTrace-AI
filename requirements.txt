@@ -6,3 +6,5 @@ streamlit
 matplotlib
 scikit-learn
 python-multipart
+pyvis
+reportlab

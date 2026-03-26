@@ -9,8 +9,8 @@ def build_graph(df):
             row['to'],
             amount=row['amount'],
             timestamp=row['timestamp'],
-            channel=row['channel'],
-            location=row['location']
+            channel=row.get('channel', 'Unknown'),
+            location=row.get('location', 'Unknown')
         )
 
     return G

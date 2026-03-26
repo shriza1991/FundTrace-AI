@@ -29,7 +29,7 @@ def detect_velocity(df):
         user_txns = df[df['from'] == acc].sort_values('timestamp')
         if len(user_txns) >= 3:
             time_diff = (user_txns.iloc[-1]['timestamp'] - user_txns.iloc[0]['timestamp']).seconds
-            if time_diff < 3600:  # within 1 hour
+            if time_diff < 3600:
                 suspicious.append(acc)
 
     return suspicious
@@ -52,3 +52,12 @@ def detect_dormant(df):
                 suspicious.append(acc)
 
     return suspicious
+
+
+# 🤖 ML anomaly
+from sklearn.ensemble import IsolationForest
+
+def ml_anomaly(df):
+    model = IsolationForest(contamination=0.1)
+    df["anomaly"] = model.fit_predict(df[["amount"]])
+    return df[df["anomaly"] == -1]["from"].unique().tolist()
