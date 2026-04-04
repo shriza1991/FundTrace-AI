@@ -1,0 +1,110 @@
+{
+  "alerts": [
+    {
+      "account": "ACC05200000000013",
+      "risk_score": 40,
+      "severity": "MEDIUM",
+      "reasons": [
+        "ml_anomaly"
+      ],
+      "explanation": "🤖 ML anomaly: Nitin Sinha (ACC05200000000013)'s transaction behaviour deviates significantly from normal patterns (Isolation Forest).",
+      "evidence": [
+        {
+          "transaction_id": "T0264",
+          "from_account": "ACC05200000000013",
+          "from_name": "Nitin Sinha",
+          "to_account": "ACC05200000000011",
+          "to_name": "Asha Bhosle",
+          "amount": 492575.38,
+          "timestamp": "2026-05-29 20:00:00",
+          "channel": "NEFT",
+          "ifsc_from": "UBIN0531898",
+          "ifsc_to": "UBIN0532134",
+          "location": "Mumbai",
+          "lat": 19.1145,
+          "lon": 72.9028,
+          "note": "dormant_activation_fraud",
+          "anomaly": -1
+        }
+      ]
+    },
+    {
+      "account": "ACC05200000000011",
+      "risk_score": 25,
+      "severity": "LOW",
+      "reasons": [
+        "velocity"
+      ],
+      "explanation": "⚡ High transaction velocity: Asha Bhosle (ACC05200000000011) made multiple rapid transfers in a short time window — possible automated mule behaviour.",
+      "evidence": [
+        {
+          "transaction_id": "T0265",
+          "from_account": "ACC05200000000011",
+          "from_name": "Asha Bhosle",
+          "to_account": "ACC05200000000007",
+          "to_name": "Hema Malhotra",
+          "amount": 148597.16,
+          "timestamp": "2026-05-29 20:05:00",
+          "channel": "IMPS",
+          "ifsc_from": "UBIN0532134",
+          "ifsc_to": "UBIN0532302",
+          "location": "Bengaluru",
+          "lat": 12.9369,
+          "lon": 77.5606,
+          "note": "dormant_dispersal_fraud",
+          "anomaly": 1
+        },
+        {
+          "transaction_id": "T0266",
+          "from_account": "ACC05200000000011",
+          "from_name": "Asha Bhosle",
+          "to_account": "ACC05200000000029",
+          "to_name": "Usha Naik",
+          "amount": 162836.72,
+          "timestamp": "2026-05-29 20:08:00",
+          "channel": "IMPS",
+          "ifsc_from": "UBIN0532134",
+          "ifsc_to": "UBIN0532134",
+          "location": "Bengaluru",
+          "lat": 12.9369,
+          "lon": 77.5606,
+          "note": "dormant_dispersal_fraud",
+          "anomaly": 1
+        },
+        {
+          "transaction_id": "T0267",
+          "from_account": "ACC05200000000011",
+          "from_name": "Asha Bhosle",
+          "to_account": "ACC05200000000016",
+          "to_name": "Ramesh Kumar",
+          "amount": 155267.34,
+          "timestamp": "2026-05-29 20:10:00",
+          "channel": "IMPS",
+          "ifsc_from": "UBIN0532134",
+          "ifsc_to": "UBIN0531734",
+          "location": "Bengaluru",
+          "lat": 12.9369,
+          "lon": 77.5606,
+          "note": "dormant_dispersal_fraud",
+          "anomaly": 1
+        }
+      ]
+    }
+  ],
+  "signals": {
+    "cycle": [],
+    "layering": [],
+    "structuring": [],
+    "velocity": [
+      "ACC05200000000011"
+    ],
+    "anomaly": [],
+    "dormant": [],
+    "ml_anomaly": [
+      "ACC05200000000013"
+    ]
+  },
+  "fraud_paths": [],
+  "evidence_hash": "58328da474e3475a9db5256766dba583bd2828c79b22bc6cf4cbe4a7620fb396",
+  "hash_generated_at": "2026-04-04T20:08:53.654899Z"
+}

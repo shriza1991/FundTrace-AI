@@ -1,0 +1,17 @@
+[
+  {
+    "answer": "The circular flow involves accounts ACC05200000000035 (Manoj Tiwari), ACC05200000000009 (Lalita Chatterjee), and ACC05200000000007 (Hema Malhotra). \n\nThe transactions occurred in the following sequence: \n- Manoj Tiwari (ACC05200000000035) sent ₹18.28 crore to Meena Iyer (ACC05200000000001) on 2025-09-01 20:14:00.\n- The money then flowed from Meena Iyer (ACC05200000000001) to Rekha Pandey 4 (ACC05200000000037) on 2025-09-01 20:23:00.\n- Then from Rekha Pandey 4 (ACC05200000000037) to Arun Bose (ACC05200000000021) on 2025-09-01 20:33:00.\n- Next, from Arun Bose (ACC05200000000021) to Hema Malhotra (ACC05200000000007) on 2025-09-01 20:39:00.\n- Then, from Hema Malhotra (ACC05200000000007) to Lalita Chatterjee (ACC05200000000009) on 2025-09-01 20:49:00.\n- Finally, from Lalita Chatterjee (ACC052000000",
+    "question": "Which accounts form the circular flow and how long did it take?",
+    "model_used": "meta/llama-3.1-8b-instruct"
+  },
+  {
+    "answer": "The total amount laundered across all hops is ₹18.28 crore. This is calculated by adding the amounts of all transactions: ₹18,284,023 + ₹17,838,535 + ₹17,376,017 + ₹16,942,006 + ₹16,577,270 + ₹16,190,541.",
+    "question": "What is the total amount laundered across all hops?",
+    "model_used": "meta/llama-3.1-8b-instruct"
+  },
+  {
+    "answer": "The account that initiated the round-trip is ACC05200000000035, held by Manoj Tiwari. The transaction started with a transfer of ₹18.28 crore from this account to ACC05200000000001, and ended with a transfer of ₹16.19 crore back to this account from ACC05200000000009, held by Lalita Chatterjee.",
+    "question": "Which account initiated the round-trip?",
+    "model_used": "meta/llama-3.1-8b-instruct"
+  }
+]

@@ -1,0 +1,83 @@
+{
+  "alerts": [
+    {
+      "account": "ACC05200000000012",
+      "risk_score": 60,
+      "severity": "MEDIUM",
+      "reasons": [
+        "structuring",
+        "ml_anomaly"
+      ],
+      "explanation": "💰 Structuring detected: Vikram Patel (ACC05200000000012) made multiple sub-threshold transactions to avoid ₹10L reporting requirement. 🤖 ML anomaly: Vikram Patel (ACC05200000000012)'s transaction behaviour deviates significantly from normal patterns (Isolation Forest).",
+      "evidence": [
+        {
+          "transaction_id": "T0130",
+          "from_account": "ACC05200000000012",
+          "from_name": "Vikram Patel",
+          "to_account": "ACC05200000000014",
+          "to_name": "Pooja Agarwal",
+          "amount": 99226.67,
+          "timestamp": "2025-09-11 19:16:00",
+          "channel": "NEFT",
+          "ifsc_from": "UBIN0532134",
+          "ifsc_to": "UBIN0531979",
+          "location": "Bengaluru",
+          "lat": 12.9812,
+          "lon": 77.5914,
+          "note": "structuring_fraud",
+          "anomaly": -1
+        },
+        {
+          "transaction_id": "T0131",
+          "from_account": "ACC05200000000012",
+          "from_name": "Vikram Patel",
+          "to_account": "ACC05200000000027",
+          "to_name": "Sanjay Dubey",
+          "amount": 89801.67,
+          "timestamp": "2025-09-11 19:24:00",
+          "channel": "NEFT",
+          "ifsc_from": "UBIN0532134",
+          "ifsc_to": "UBIN0532053",
+          "location": "Bengaluru",
+          "lat": 12.9812,
+          "lon": 77.5914,
+          "note": "structuring_fraud",
+          "anomaly": 1
+        },
+        {
+          "transaction_id": "T0132",
+          "from_account": "ACC05200000000012",
+          "from_name": "Vikram Patel",
+          "to_account": "ACC05200000000023",
+          "to_name": "Mohan Lal",
+          "amount": 86672.46,
+          "timestamp": "2025-09-11 19:36:00",
+          "channel": "NEFT",
+          "ifsc_from": "UBIN0532134",
+          "ifsc_to": "UBIN0532467",
+          "location": "Bengaluru",
+          "lat": 12.9812,
+          "lon": 77.5914,
+          "note": "structuring_fraud",
+          "anomaly": 1
+        }
+      ]
+    }
+  ],
+  "signals": {
+    "cycle": [],
+    "layering": [],
+    "structuring": [
+      "ACC05200000000012"
+    ],
+    "velocity": [],
+    "anomaly": [],
+    "dormant": [],
+    "ml_anomaly": [
+      "ACC05200000000012"
+    ]
+  },
+  "fraud_paths": [],
+  "evidence_hash": "d5267843c5aa1410bf628187416f573d6cb66578942f205e58486a9e8d4ba8fa",
+  "hash_generated_at": "2026-04-04T20:08:25.718357Z"
+}

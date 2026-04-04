@@ -1,0 +1,17 @@
+[
+  {
+    "answer": "There were no transactions below the ₹1 lakh threshold. All transactions were above ₹1 lakh.",
+    "question": "How many transactions were made below the ₹1 lakh threshold?",
+    "model_used": "meta/llama-3.1-8b-instruct"
+  },
+  {
+    "answer": "The cumulative total of the structured transactions is ₹8.64 crore.",
+    "question": "What is the cumulative total of the structured transactions?",
+    "model_used": "meta/llama-3.1-8b-instruct"
+  },
+  {
+    "answer": "Account ACC05200000000012, held by Vikram Patel, initiated the structuring as it has multiple transactions of varying amounts to different beneficiaries within a short period.",
+    "question": "Which account initiated the structuring?",
+    "model_used": "meta/llama-3.1-8b-instruct"
+  }
+]

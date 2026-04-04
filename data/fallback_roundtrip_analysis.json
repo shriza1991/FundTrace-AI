@@ -1,0 +1,293 @@
+{
+  "alerts": [
+    {
+      "account": "ACC05200000000035",
+      "risk_score": 120,
+      "severity": "HIGH",
+      "reasons": [
+        "cycle",
+        "layering",
+        "ml_anomaly"
+      ],
+      "explanation": "🔁 Circular transactions detected: funds leave and return to Manoj Tiwari (ACC05200000000035), indicating possible round-tripping. 🔄 Layering behavior detected: funds move across multiple accounts to obscure origin from Manoj Tiwari (ACC05200000000035). 🤖 ML anomaly: Manoj Tiwari (ACC05200000000035)'s transaction behaviour deviates significantly from normal patterns (Isolation Forest).",
+      "evidence": [
+        {
+          "transaction_id": "T0012",
+          "from_account": "ACC05200000000035",
+          "from_name": "Manoj Tiwari",
+          "to_account": "ACC05200000000001",
+          "to_name": "Meena Iyer",
+          "amount": 182840.23,
+          "timestamp": "2025-09-01 20:14:00",
+          "channel": "NEFT",
+          "ifsc_from": "UBIN0532134",
+          "ifsc_to": "UBIN0531912",
+          "location": "Bengaluru",
+          "lat": 12.9336,
+          "lon": 77.6336,
+          "note": "round_trip_fraud",
+          "anomaly": -1
+        }
+      ]
+    },
+    {
+      "account": "ACC05200000000001",
+      "risk_score": 80,
+      "severity": "HIGH",
+      "reasons": [
+        "cycle",
+        "layering"
+      ],
+      "explanation": "🔁 Circular transactions detected: funds leave and return to Meena Iyer (ACC05200000000001), indicating possible round-tripping. 🔄 Layering behavior detected: funds move across multiple accounts to obscure origin from Meena Iyer (ACC05200000000001).",
+      "evidence": [
+        {
+          "transaction_id": "T0013",
+          "from_account": "ACC05200000000001",
+          "from_name": "Meena Iyer",
+          "to_account": "ACC05200000000037",
+          "to_name": "Rekha Pandey 4",
+          "amount": 178385.35,
+          "timestamp": "2025-09-01 20:23:00",
+          "channel": "IMPS",
+          "ifsc_from": "UBIN0531912",
+          "ifsc_to": "UBIN0532178",
+          "location": "Nagpur",
+          "lat": 21.1223,
+          "lon": 79.0425,
+          "note": "round_trip_fraud",
+          "anomaly": 1
+        }
+      ]
+    },
+    {
+      "account": "ACC05200000000037",
+      "risk_score": 80,
+      "severity": "HIGH",
+      "reasons": [
+        "cycle",
+        "layering"
+      ],
+      "explanation": "🔁 Circular transactions detected: funds leave and return to Rekha Pandey 4 (ACC05200000000037), indicating possible round-tripping. 🔄 Layering behavior detected: funds move across multiple accounts to obscure origin from Rekha Pandey 4 (ACC05200000000037).",
+      "evidence": [
+        {
+          "transaction_id": "T0014",
+          "from_account": "ACC05200000000037",
+          "from_name": "Rekha Pandey 4",
+          "to_account": "ACC05200000000021",
+          "to_name": "Arun Bose",
+          "amount": 173760.17,
+          "timestamp": "2025-09-01 20:33:00",
+          "channel": "RTGS",
+          "ifsc_from": "UBIN0532178",
+          "ifsc_to": "UBIN0531790",
+          "location": "Jaipur",
+          "lat": 26.934,
+          "lon": 75.7612,
+          "note": "round_trip_fraud",
+          "anomaly": 1
+        }
+      ]
+    },
+    {
+      "account": "ACC05200000000021",
+      "risk_score": 80,
+      "severity": "HIGH",
+      "reasons": [
+        "cycle",
+        "layering"
+      ],
+      "explanation": "🔁 Circular transactions detected: funds leave and return to Arun Bose (ACC05200000000021), indicating possible round-tripping. 🔄 Layering behavior detected: funds move across multiple accounts to obscure origin from Arun Bose (ACC05200000000021).",
+      "evidence": [
+        {
+          "transaction_id": "T0015",
+          "from_account": "ACC05200000000021",
+          "from_name": "Arun Bose",
+          "to_account": "ACC05200000000007",
+          "to_name": "Hema Malhotra",
+          "amount": 169420.06,
+          "timestamp": "2025-09-01 20:39:00",
+          "channel": "NEFT",
+          "ifsc_from": "UBIN0531790",
+          "ifsc_to": "UBIN0532302",
+          "location": "Kolkata",
+          "lat": 22.6221,
+          "lon": 88.3789,
+          "note": "round_trip_fraud",
+          "anomaly": 1
+        }
+      ]
+    },
+    {
+      "account": "ACC05200000000007",
+      "risk_score": 80,
+      "severity": "HIGH",
+      "reasons": [
+        "cycle",
+        "layering"
+      ],
+      "explanation": "🔁 Circular transactions detected: funds leave and return to Hema Malhotra (ACC05200000000007), indicating possible round-tripping. 🔄 Layering behavior detected: funds move across multiple accounts to obscure origin from Hema Malhotra (ACC05200000000007).",
+      "evidence": [
+        {
+          "transaction_id": "T0016",
+          "from_account": "ACC05200000000007",
+          "from_name": "Hema Malhotra",
+          "to_account": "ACC05200000000009",
+          "to_name": "Lalita Chatterjee",
+          "amount": 165772.7,
+          "timestamp": "2025-09-01 20:49:00",
+          "channel": "NEFT",
+          "ifsc_from": "UBIN0532302",
+          "ifsc_to": "UBIN0531856",
+          "location": "Lucknow",
+          "lat": 26.8789,
+          "lon": 80.9767,
+          "note": "round_trip_fraud",
+          "anomaly": 1
+        }
+      ]
+    },
+    {
+      "account": "ACC05200000000009",
+      "risk_score": 80,
+      "severity": "HIGH",
+      "reasons": [
+        "cycle",
+        "layering"
+      ],
+      "explanation": "🔁 Circular transactions detected: funds leave and return to Lalita Chatterjee (ACC05200000000009), indicating possible round-tripping. 🔄 Layering behavior detected: funds move across multiple accounts to obscure origin from Lalita Chatterjee (ACC05200000000009).",
+      "evidence": [
+        {
+          "transaction_id": "T0017",
+          "from_account": "ACC05200000000009",
+          "from_name": "Lalita Chatterjee",
+          "to_account": "ACC05200000000035",
+          "to_name": "Manoj Tiwari",
+          "amount": 161905.41,
+          "timestamp": "2025-09-01 20:57:00",
+          "channel": "RTGS",
+          "ifsc_from": "UBIN0531856",
+          "ifsc_to": "UBIN0532134",
+          "location": "Patna",
+          "lat": 25.5581,
+          "lon": 85.1621,
+          "note": "round_trip_fraud",
+          "anomaly": 1
+        }
+      ]
+    }
+  ],
+  "signals": {
+    "cycle": [
+      "ACC05200000000007",
+      "ACC05200000000009",
+      "ACC05200000000035",
+      "ACC05200000000001",
+      "ACC05200000000037",
+      "ACC05200000000021"
+    ],
+    "layering": [
+      "ACC05200000000035",
+      "ACC05200000000001",
+      "ACC05200000000037",
+      "ACC05200000000021",
+      "ACC05200000000035",
+      "ACC05200000000001",
+      "ACC05200000000037",
+      "ACC05200000000021",
+      "ACC05200000000007",
+      "ACC05200000000035",
+      "ACC05200000000001",
+      "ACC05200000000037",
+      "ACC05200000000021",
+      "ACC05200000000007",
+      "ACC05200000000009",
+      "ACC05200000000001",
+      "ACC05200000000037",
+      "ACC05200000000021",
+      "ACC05200000000007",
+      "ACC05200000000009",
+      "ACC05200000000035",
+      "ACC05200000000001",
+      "ACC05200000000037",
+      "ACC05200000000021",
+      "ACC05200000000007",
+      "ACC05200000000001",
+      "ACC05200000000037",
+      "ACC05200000000021",
+      "ACC05200000000007",
+      "ACC05200000000009",
+      "ACC05200000000037",
+      "ACC05200000000021",
+      "ACC05200000000007",
+      "ACC05200000000009",
+      "ACC05200000000035",
+      "ACC05200000000037",
+      "ACC05200000000021",
+      "ACC05200000000007",
+      "ACC05200000000009",
+      "ACC05200000000035",
+      "ACC05200000000001",
+      "ACC05200000000037",
+      "ACC05200000000021",
+      "ACC05200000000007",
+      "ACC05200000000009",
+      "ACC05200000000021",
+      "ACC05200000000007",
+      "ACC05200000000009",
+      "ACC05200000000035",
+      "ACC05200000000021",
+      "ACC05200000000007",
+      "ACC05200000000009",
+      "ACC05200000000035",
+      "ACC05200000000001",
+      "ACC05200000000021",
+      "ACC05200000000007",
+      "ACC05200000000009",
+      "ACC05200000000035",
+      "ACC05200000000001",
+      "ACC05200000000037",
+      "ACC05200000000007",
+      "ACC05200000000009",
+      "ACC05200000000035",
+      "ACC05200000000001",
+      "ACC05200000000007",
+      "ACC05200000000009",
+      "ACC05200000000035",
+      "ACC05200000000001",
+      "ACC05200000000037",
+      "ACC05200000000007",
+      "ACC05200000000009",
+      "ACC05200000000035",
+      "ACC05200000000001",
+      "ACC05200000000037",
+      "ACC05200000000021",
+      "ACC05200000000009",
+      "ACC05200000000035",
+      "ACC05200000000001",
+      "ACC05200000000037",
+      "ACC05200000000009",
+      "ACC05200000000035",
+      "ACC05200000000001",
+      "ACC05200000000037",
+      "ACC05200000000021",
+      "ACC05200000000009",
+      "ACC05200000000035",
+      "ACC05200000000001",
+      "ACC05200000000037",
+      "ACC05200000000021",
+      "ACC05200000000007"
+    ],
+    "structuring": [],
+    "velocity": [],
+    "anomaly": [],
+    "dormant": [],
+    "ml_anomaly": [
+      "ACC05200000000035"
+    ]
+  },
+  "fraud_paths": [
+    "ACC05200000000007 → ACC05200000000009 → ACC05200000000035 → ACC05200000000001 → ACC05200000000037 → ACC05200000000021 → ACC05200000000007"
+  ],
+  "evidence_hash": "9de19b4704e8fbd71f8614e565ad33d0e5b8bc6a328b6b0c4e91f2bd14985f55",
+  "hash_generated_at": "2026-04-04T20:07:48.294166Z"
+}
