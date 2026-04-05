@@ -21,8 +21,8 @@ import logging
 import os
 import random
 import traceback
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
-from functools import lru_cache
 
 # ---------------------------------------------------------------------------
 # Third-party
@@ -91,9 +91,15 @@ else:
 # Internal imports
 # ---------------------------------------------------------------------------
 from backend.explain import generate_explanation
-from backend.fraud_detection import *
+from backend.fraud_detection import (
+    detect_cycles, detect_layering, detect_structuring,
+    detect_velocity, detect_anomaly, detect_dormant, ml_anomaly,
+)
 from backend.graph_builder import build_graph
 from backend.risk_scoring import calculate_risk
+
+# Shared thread pool for CPU-bound detection functions
+_detection_pool = ThreadPoolExecutor(max_workers=4)
 
 # ---------------------------------------------------------------------------
 # FastAPI app
@@ -341,7 +347,14 @@ def generate_evidence_hash(alerts: list, transactions_dict: list) -> str:
 
 @app.post("/analyze")
 async def analyze(file: UploadFile):
-    """Upload a transaction CSV and receive fraud-risk analysis."""
+    """Upload a transaction CSV and receive fraud-risk analysis.
+
+    Optimised pipeline:
+      1. Graph-based signals (cycles, layering) run sequentially (need G)
+      2. DataFrame-based signals run concurrently via thread pool
+      3. All signals stored as sets for O(1) lookups
+      4. Name lookup dict built once, shared across all explanations
+    """
     try:
         df = pd.read_csv(file.file)
     except Exception as exc:
@@ -350,24 +363,52 @@ async def analyze(file: UploadFile):
     df = _validate_dataframe(df)
 
     try:
-        G      = build_graph(df)
-        cycles = detect_cycles(G)
+        # ── Phase 1: Build graph + graph-based signals ────────────────────
+        loop = asyncio.get_event_loop()
+        G = await loop.run_in_executor(_detection_pool, build_graph, df)
+        cycles = await loop.run_in_executor(_detection_pool, detect_cycles, G)
 
+        # ── Phase 2: Run independent detectors concurrently ───────────────
+        layering_fut    = loop.run_in_executor(_detection_pool, detect_layering, G)
+        structuring_fut = loop.run_in_executor(_detection_pool, detect_structuring, df)
+        velocity_fut    = loop.run_in_executor(_detection_pool, detect_velocity, df)
+        anomaly_fut     = loop.run_in_executor(_detection_pool, detect_anomaly, df)
+        dormant_fut     = loop.run_in_executor(_detection_pool, detect_dormant, df)
+        ml_anomaly_fut  = loop.run_in_executor(_detection_pool, ml_anomaly, df)
+
+        (
+            layering_paths, structuring_accs, velocity_accs,
+            anomaly_accs, dormant_accs, ml_anomaly_accs,
+        ) = await asyncio.gather(
+            layering_fut, structuring_fut, velocity_fut,
+            anomaly_fut, dormant_fut, ml_anomaly_fut,
+        )
+
+        # ── Phase 3: Build signals as SETS for O(1) lookup ────────────────
         signals = {
-            "cycle":       [n for c in cycles for n in c],
-            "layering":    [n for p in detect_layering(G) for n in p],
-            "structuring": detect_structuring(df),
-            "velocity":    detect_velocity(df),
-            "anomaly":     detect_anomaly(df),
-            "dormant":     detect_dormant(df),
-            "ml_anomaly":  ml_anomaly(df),
+            "cycle":       set(n for c in cycles for n in c),
+            "layering":    set(n for p in layering_paths for n in p),
+            "structuring": set(structuring_accs),
+            "velocity":    set(velocity_accs),
+            "anomaly":     set(anomaly_accs),
+            "dormant":     set(dormant_accs),
+            "ml_anomaly":  set(ml_anomaly_accs),
         }
 
+        # ── Phase 4: Pre-build name lookup (once, not per-account) ────────
+        name_lookup = {}
+        if "from_name" in df.columns:
+            name_pairs = df[["from_account", "from_name"]].drop_duplicates("from_account")
+            name_lookup = dict(zip(name_pairs["from_account"], name_pairs["from_name"]))
+
+        # ── Phase 5: Score + explain each node ────────────────────────────
         results = []
         for node in G.nodes:
             score, severity, reasons = calculate_risk(node, signals)
-            explanation = generate_explanation(node, df, signals)
             if score > 0:
+                explanation = generate_explanation(
+                    node, df, signals, name_lookup=name_lookup
+                )
                 results.append({
                     "account":     node,
                     "risk_score":  score,
@@ -386,6 +427,9 @@ async def analyze(file: UploadFile):
         evidence_hash   = generate_evidence_hash(sorted_alerts, df.to_dict("records"))
         hash_generated  = datetime.utcnow().isoformat() + "Z"
 
+        # Convert sets → lists for JSON serialisation in the response
+        signals_serialisable = {k: sorted(v) for k, v in signals.items()}
+
         logger.info(
             f"Analysis complete — {len(results)} alerts, {len(cycles)} cycles, "
             f"evidence hash: {evidence_hash[:16]}…"
@@ -393,7 +437,7 @@ async def analyze(file: UploadFile):
 
         return {
             "alerts":            sorted_alerts,
-            "signals":           signals,
+            "signals":           signals_serialisable,
             "fraud_paths":       fraud_paths,
             "evidence_hash":     evidence_hash,
             "hash_generated_at": hash_generated,

@@ -46,7 +46,7 @@ st.set_page_config(
 _DEFAULTS = {
     "analysis_result":  None,
     "alert_page":       0,
-    "severity_filter":  "HIGH",
+    "severity_filter":  "ALL",
     "transactions_df":  None,
     "loaded_file_name": None,
     "str_result":       None,   # cached STR output
@@ -118,8 +118,9 @@ def run_analysis(file_bytes: bytes, file_name: str) -> dict:
     return resp.json()
 
 
+@st.cache_data(show_spinner=False)
 def generate_pdf(alerts: list) -> str:
-    """Build a PDF fraud report and return the temp file path."""
+    """Build a PDF fraud report and return the temp file path. Cached."""
     tmp = tempfile.NamedTemporaryFile(delete=False, suffix=".pdf")
     doc = SimpleDocTemplate(tmp.name)
     styles = getSampleStyleSheet()
@@ -133,6 +134,14 @@ def generate_pdf(alerts: list) -> str:
         content.append(Paragraph(line, styles["Normal"]))
     doc.build(content)
     return tmp.name
+
+
+def _serialise_txn_list(df: pd.DataFrame, limit: int) -> list:
+    """Convert top `limit` rows to JSON-safe dicts with vectorised timestamp conversion."""
+    subset = df.head(limit).copy()
+    if "timestamp" in subset.columns:
+        subset["timestamp"] = subset["timestamp"].astype(str)
+    return subset.to_dict(orient="records")
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -423,8 +432,14 @@ if (
     # ── Fraud Paths ───────────────────────────────────────────────────────────
     if fraud_paths:
         st.subheader("🧠 Detected Fraud Paths")
-        for path in fraud_paths:
+        MAX_DISPLAY_PATHS = 20
+        for path in fraud_paths[:MAX_DISPLAY_PATHS]:
             st.error(path)
+        if len(fraud_paths) > MAX_DISPLAY_PATHS:
+            st.caption(
+                f"Showing **{MAX_DISPLAY_PATHS}** of **{len(fraud_paths)}** "
+                f"detected circular paths. Download the full report for complete details."
+            )
         st.divider()
 
     # ── Evidence Integrity Certificate ────────────────────────────────────────
@@ -460,68 +475,74 @@ if (
 
         st.divider()
 
-    # ── Network Graph ─────────────────────────────────────────────────────────
+    # ── Network Graph (lazy-loaded in expander) ─────────────────────────────
     st.subheader("🌐 Interactive Transaction Network")
+    with st.expander("💠 Click to expand network graph", expanded=False):
+        flagged_accounts: set = set()
+        for alert in alerts:
+            flagged_accounts.add(alert["account"])
+            for txn in alert.get("evidence", []):
+                for key in ("from_account", "to_account"):
+                    val = txn.get(key, "")
+                    if val:
+                        flagged_accounts.add(val)
+        flagged_accounts.discard("")
 
-    flagged_accounts: set = set()
-    for alert in alerts:
-        flagged_accounts.add(alert["account"])
-        for txn in alert.get("evidence", []):
-            for key in ("from_account", "to_account"):
-                val = txn.get(key, "")
-                if val:
-                    flagged_accounts.add(val)
-    flagged_accounts.discard("")
-
-    net = Network(
-        height="520px", width="100%",
-        directed=True, bgcolor="#0e1117", font_color="white",
-    )
-    net.barnes_hut(gravity=-5000, central_gravity=0.3, spring_length=120)
-
-    added_nodes: set = set()
-    edge_count  = 0
-
-    for _, row in df.iterrows():
-        if edge_count >= MAX_EDGES:
-            break
-        src = str(row.get("from_account", "") or "")
-        dst = str(row.get("to_account",   "") or "")
-        if not src or not dst:
-            continue
-        if src not in flagged_accounts and dst not in flagged_accounts:
-            continue
-
-        for node_id in (src, dst):
-            if node_id not in added_nodes:
-                sev   = severity_map.get(node_id)
-                color = GRAPH_COLORS.get(sev, "#666666")
-                size  = 20 if sev == "HIGH" else (16 if sev == "MEDIUM" else 12)
-                net.add_node(node_id, label=node_id[:12], color=color, size=size, title=node_id)
-                added_nodes.add(node_id)
-
-        net.add_edge(
-            src, dst,
-            label=f"₹{float(row.get('amount', 0)):,.0f}",
-            title=str(row.get("channel", "Unknown")),
-            arrows="to",
-            color="#555555",
+        net = Network(
+            height="520px", width="100%",
+            directed=True, bgcolor="#0e1117", font_color="white",
         )
-        edge_count += 1
+        net.barnes_hut(gravity=-5000, central_gravity=0.3, spring_length=120)
 
-    try:
-        tmp = tempfile.NamedTemporaryFile(delete=False, suffix=".html")
-        net.save_graph(tmp.name)
-        with open(tmp.name, "r", encoding="utf-8") as fh:
-            html_data = fh.read()
-        st.components.v1.html(html_data, height=530)
-        capped = " (capped at 80)" if edge_count >= MAX_EDGES else ""
-        st.caption(
-            f"Showing **{len(added_nodes)}** flagged accounts | "
-            f"**{edge_count}** suspicious connections{capped}"
-        )
-    except Exception as exc:
-        st.warning(f"Could not render network graph: {exc}")
+        added_nodes: set = set()
+        edge_count  = 0
+
+        # Vectorised pre-filter: only rows touching flagged accounts
+        if flagged_accounts:
+            mask = (
+                df["from_account"].astype(str).isin(flagged_accounts)
+                | df["to_account"].astype(str).isin(flagged_accounts)
+            )
+            graph_df = df.loc[mask].head(MAX_EDGES)
+        else:
+            graph_df = df.head(MAX_EDGES)
+
+        for _, row in graph_df.iterrows():
+            src = str(row.get("from_account", "") or "")
+            dst = str(row.get("to_account",   "") or "")
+            if not src or not dst:
+                continue
+
+            for node_id in (src, dst):
+                if node_id not in added_nodes:
+                    sev   = severity_map.get(node_id)
+                    color = GRAPH_COLORS.get(sev, "#666666")
+                    size  = 20 if sev == "HIGH" else (16 if sev == "MEDIUM" else 12)
+                    net.add_node(node_id, label=node_id[:12], color=color, size=size, title=node_id)
+                    added_nodes.add(node_id)
+
+            net.add_edge(
+                src, dst,
+                label=f"₹{float(row.get('amount', 0)):,.0f}",
+                title=str(row.get("channel", "Unknown")),
+                arrows="to",
+                color="#555555",
+            )
+            edge_count += 1
+
+        try:
+            tmp = tempfile.NamedTemporaryFile(delete=False, suffix=".html")
+            net.save_graph(tmp.name)
+            with open(tmp.name, "r", encoding="utf-8") as fh:
+                html_data = fh.read()
+            st.components.v1.html(html_data, height=530)
+            capped = " (capped at 80)" if edge_count >= MAX_EDGES else ""
+            st.caption(
+                f"Showing **{len(added_nodes)}** flagged accounts | "
+                f"**{edge_count}** suspicious connections{capped}"
+            )
+        except Exception as exc:
+            st.warning(f"Could not render network graph: {exc}")
 
     st.divider()
 
@@ -580,12 +601,7 @@ if (
         else:
             with st.spinner("Generating STR via AI… (may take 10–30 seconds)"):
                 try:
-                    txn_list = df.head(50).to_dict(orient="records")
-                    # Serialise timestamps to strings for JSON
-                    for t in txn_list:
-                        for k, v in t.items():
-                            if hasattr(v, "isoformat"):
-                                t[k] = v.isoformat()
+                    txn_list = _serialise_txn_list(df, 50)
 
                     payload = {
                         "alerts":        alerts[:20],
@@ -642,11 +658,7 @@ if (
         else:
             with st.spinner("Thinking…"):
                 try:
-                    txn_list = df.head(30).to_dict(orient="records")
-                    for t in txn_list:
-                        for k, v in t.items():
-                            if hasattr(v, "isoformat"):
-                                t[k] = v.isoformat()
+                    txn_list = _serialise_txn_list(df, 30)
 
                     payload = {"question": question, "transactions": txn_list}
                     resp = requests.post(ASK_URL, json=payload, timeout=30)
